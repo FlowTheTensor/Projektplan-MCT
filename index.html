@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Christoph Rothaug, Jakob-Preh-Schule Bad Neustadt">
+    <!-- Lizenz: CC BY 4.0 – Christoph Rothaug, Jakob-Preh-Schule Bad Neustadt (ausgenommen Schullogo, Schriften; siehe README) -->
+    <link rel="license" href="https://creativecommons.org/licenses/by/4.0/">
+    <title>Entwicklungsbüro JPS Embedded · Jakob-Preh-Schule</title>
+    <script>
+    /* Hell/Dunkel wie im Dashboard: gespeicherte Wahl, sonst Systemeinstellung */
+    (function(){ var t = null; try { t = localStorage.getItem('jps-theme'); } catch(e){}
+      if(t !== 'dark' && t !== 'light'){ t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+      document.documentElement.setAttribute('data-theme', t); })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="plan.js"></script>
+    <script src="buero.js"></script>
+</head>
+<body>
+    <header class="kopf">
+        <a class="logo" href="https://nerdifant.de/Dashboard-Lernsituationen/" title="Zum Dashboard Lernsituationen"><img src="assets/logo-jps.png" alt="Jakob-Preh-Schule"></a>
+        <div class="kopf-text">
+            <h1 id="titel">Entwicklungsbüro</h1>
+            <p id="untertitel"></p>
+        </div>
+        <div class="zaehler" id="zaehler" aria-live="polite"></div>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false" aria-label="Dunkles Design einschalten">
+            <svg class="moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            <svg class="sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+    </header>
+
+    <main class="seite">
+        <section class="einleitung">
+            <p id="einleitung"></p>
+            <ul class="legende-tp" id="legende-tp"></ul>
+        </section>
+
+        <div class="raster">
+            <section class="panel plan">
+                <div class="panel-kopf">
+                    <span class="punkt"></span>Projektplan
+                    <div class="reiter" role="group" aria-label="Ansicht">
+                        <button type="button" data-ansicht="gantt" aria-pressed="true">Gantt-Diagramm</button>
+                        <button type="button" data-ansicht="psp" aria-pressed="false">Projektstrukturplan</button>
+                    </div>
+                </div>
+                <div class="gantt" id="gantt"></div>
+                <div class="psp" id="psp" hidden></div>
+                <ul class="legende" id="legende-gantt">
+                    <li><span class="lg-balken"></span>Arbeitspaket (geplant)</li>
+                    <li><span class="lg-balken voll"></span>erledigter Anteil</li>
+                    <li><span class="lg-raute"></span>Meilenstein</li>
+                    <li><span class="lg-raute voll"></span>erreicht</li>
+                    <li><span class="lg-pfeil"></span>Abhängigkeit</li>
+                    <li><span class="lg-frei"></span>Ferien</li>
+                    <li><span class="lg-heute"></span>heute</li>
+                    <li><span class="lg-eigen"></span>dein eigenes Arbeitspaket</li>
+                </ul>
+            </section>
+
+            <aside class="seitenleiste">
+                <section class="panel">
+                    <div class="panel-kopf"><span class="punkt"></span>Dein Büroausweis</div>
+                    <div class="panel-inhalt">
+                        <div class="ausweis">
+                            <div class="ausweis-band"><span>JPS EMBEDDED</span><small>Entwicklungsbüro</small></div>
+                            <div class="ausweis-koerper">
+                                <svg class="ausweis-chip" viewBox="0 0 64 64" aria-hidden="true"><rect x="16" y="16" width="32" height="32" rx="4"/><path d="M22 16v-8M32 16v-8M42 16v-8M22 48v8M32 48v8M42 48v8M16 22h-8M16 32h-8M16 42h-8M48 22h8M48 32h8M48 42h8"/><circle cx="25" cy="25" r="3"/></svg>
+                                <div class="ausweis-text">
+                                    <b id="ausweis-name">Dein Name</b>
+                                    <span id="ausweis-rang">Praktikum</span>
+                                    <small id="ausweis-naechste"></small>
+                                </div>
+                            </div>
+                            <div class="ausweis-balken"><i id="ausweis-balken"></i></div>
+                        </div>
+                        <label class="feld"><span>Name auf dem Ausweis</span><input id="name" type="text" maxlength="32" placeholder="Vor- und Nachname" autocomplete="off" spellcheck="false"></label>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-kopf"><span class="punkt"></span>Projektampel</div>
+                    <div class="panel-inhalt ampel-box">
+                        <div class="ampel" id="ampel" aria-hidden="true"><i class="l-rot"></i><i class="l-gelb"></i><i class="l-gruen"></i></div>
+                        <div>
+                            <p class="ampel-text" id="ampel-text"></p>
+                            <ul class="ampel-liste" id="ampel-liste"></ul>
+                        </div>
+                    </div>
+                    <p class="hinweis">Die Ampel vergleicht deinen Fortschritt mit dem Plan: Grün im Plan, Gelb verzögert, Rot überfällig.</p>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-kopf"><span class="punkt"></span>Mein Projektplan</div>
+                    <div class="panel-inhalt">
+                        <p class="hinweis oben">Plane die Arbeitspakete deines eigenen Projekts. Sie erscheinen im Gantt-Diagramm unter Teilprojekt 3.</p>
+                        <form id="eigen-form" class="eigen-form">
+                            <label class="feld"><span>Arbeitspaket</span><input name="name" type="text" maxlength="60" placeholder="z. B. Sensor anschließen" required></label>
+                            <div class="zwei">
+                                <label class="feld"><span>Start</span><input name="start" type="date" required></label>
+                                <label class="feld"><span>Ende</span><input name="ende" type="date" required></label>
+                            </div>
+                            <button type="submit" class="knopf primaer">Arbeitspaket eintragen</button>
+                        </form>
+                        <ul class="eigene-liste" id="eigene-liste"></ul>
+                        <div class="sicherung">
+                            <p class="hinweis oben"><b>Sicherung:</b> Speichere deinen Projektplan und deine Haken als CSV-Datei auf deinem Rechner. Wird der Browser zurückgesetzt, holst du alles mit „Importieren“ zurück.</p>
+                            <div class="zwei">
+                                <button type="button" class="knopf" id="csv-export">Als CSV speichern</button>
+                                <button type="button" class="knopf" id="csv-import-knopf">CSV importieren</button>
+                            </div>
+                            <input type="file" id="csv-import" accept=".csv,text/csv" hidden>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="panel detail" id="detail" aria-live="polite"></section>
+        </div>
+
+        <section class="speicher-info">
+            <p id="hinweis-speicher" class="warnung" hidden>Dein Browser erlaubt hier keinen lokalen Speicher (z. B. im privaten Fenster). Haken und eigene Arbeitspakete können dann nicht gespeichert werden.</p>
+            <p>Haken und eigene Arbeitspakete speichert diese Seite nur in <b>diesem Browser auf diesem Gerät</b>. Es wird nichts verschickt. Nutze deshalb immer denselben Laptop und denselben Browser. Die Haken sind deine Übersicht, abnehmen tut deine Lehrkraft.</p>
+            <button type="button" class="knopf" id="neu-laden">Fortschritt neu einlesen</button>
+        </section>
+    </main>
+
+    <footer class="fuss">
+        <p>„Entwicklungsbüro JPS Embedded“ von Christoph Rothaug, Jakob-Preh-Schule Bad Neustadt · <a href="https://creativecommons.org/licenses/by/4.0/deed.de" target="_blank" rel="noopener">CC BY 4.0</a> · <a href="https://nerdifant.de/Dashboard-Lernsituationen/">Dashboard Lernsituationen</a></p>
+    </footer>
+
+    <div class="toast" id="toast" role="status"></div>
+    <script>
+    (function(){ var b = document.getElementById('theme-toggle'); if(!b) return;
+      function sync(){ var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        b.setAttribute('aria-pressed', d ? 'true' : 'false');
+        b.setAttribute('aria-label', d ? 'Helles Design einschalten' : 'Dunkles Design einschalten');
+        b.title = d ? 'Helles Design' : 'Dunkles Design'; }
+      b.addEventListener('click', function(){
+        var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+        try { localStorage.setItem('jps-theme', t); } catch(e){}
+        sync(); });
+      sync(); })();
+    </script>
+</body>
+</html>
