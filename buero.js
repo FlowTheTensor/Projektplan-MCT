@@ -75,6 +75,10 @@ function X(iso) {
 function xTag(t) {
   return LABEL + (t - T0) * PX;
 }
+// Meilensteine mit "termin" haben keinen festen Tag (z. B. Schulaufgabe): nur den Text zeigen
+function termin(el, mitJahr) {
+  return el.termin ? el.termin : datum(el.datum, mitJahr);
+}
 function datum(iso, mitJahr) {
   const [y, m, d] = iso.split("-");
   return `${Number(d)}.${Number(m)}.${mitJahr ? y : ""}`;
@@ -149,7 +153,10 @@ function erreicht(m) {
 }
 function msStatus(m) {
   if (!m.braucht) {
-    return heute() > tag(m.datum) ? { id: "fertig", text: "vorbei" } : { id: "geplant", text: m.art === "optional" ? "optional" : "Termin" };
+    if (heute() > tag(m.datum)) {
+      return { id: "fertig", text: "vorbei" };
+    }
+    return { id: "geplant", text: m.art === "optional" ? "optional" : m.termin ? "Termin folgt" : "Termin" };
   }
   if (erreicht(m)) {
     return { id: "fertig", text: "erreicht" };
@@ -297,10 +304,10 @@ function zeichneGantt() {
       const st = msStatus(el);
       const x = X(el.datum);
       const voll = st.id === "fertig" && el.braucht;
-      t.push(`<title>${esc(el.name)} · ${datum(el.datum, true)} · ${st.text}</title>`);
+      t.push(`<title>${esc(el.name)} · ${termin(el, true)} · ${st.text}</title>`);
       t.push(`<text class="name ms-name" x="40" y="${yy + 4}">${esc(el.name)}</text>`);
       t.push(`<path class="raute ${st.id}${el.art === "optional" ? " optional" : ""}" d="M${x} ${yy - 8}L${x + 8} ${yy}L${x} ${yy + 8}L${x - 8} ${yy}Z" stroke="${tp.farbe}" ${voll ? `fill="${tp.farbe}"` : ""}/>`);
-      const msText = el.art === "nachweis" ? `${el.name} · ${datum(el.datum)}` : datum(el.datum);
+      const msText = el.art === "nachweis" ? `${el.name} · ${termin(el)}` : termin(el);
       const links = x + 13 + msText.length * 6.4 > B - 6; // am rechten Rand: Text links der Raute
       const tx = links ? x - 13 : x + 13;
       t.push(`<text class="${el.art === "nachweis" ? "nachweis-chip" : "ms-datum"}" x="${tx}" y="${yy + 4}" ${links ? 'text-anchor="end"' : ""}>${esc(msText)}</text>`);
@@ -384,7 +391,7 @@ function zeichnePSP() {
     });
     const steine = ms.map((m) => {
       const st = msStatus(m);
-      return `<button type="button" class="psp-ms ${st.id}" data-id="${m.id}" style="--tp:${tp.farbe}"><span class="mini-raute${st.id === "fertig" && m.braucht ? " voll" : ""}"></span>${esc(m.name)} <small>${datum(m.datum)}</small></button>`;
+      return `<button type="button" class="psp-ms ${st.id}" data-id="${m.id}" style="--tp:${tp.farbe}"><span class="mini-raute${st.id === "fertig" && m.braucht ? " voll" : ""}"></span>${esc(m.name)} <small>${termin(m)}</small></button>`;
     });
     return `<div class="psp-spalte">
       <div class="psp-tp" style="--tp:${tp.farbe}"><b>${esc(tp.nr)} ${esc(tp.name)}</b><small>${esc(tp.info)}</small><span class="psp-balken"><i style="width:${Math.round(tpAnteil(tp) * 100)}%"></i></span></div>
@@ -446,7 +453,7 @@ function zeichneDetail() {
     t.push(`<div class="detail-kopf"><span class="punkt"></span>Meilenstein</div><div class="detail-inhalt">`);
     t.push(`<div class="linienkopf"><span class="linienpunkt" style="background:${tp.farbe}"></span>Teilprojekt ${esc(tp.nr)} · ${esc(tp.name)}</div>`);
     t.push(`<h2>${esc(el.name)}</h2>`);
-    t.push(`<p class="meta">Termin: ${datum(el.datum, true)}${el.art === "nachweis" ? " · Leistungsnachweis" : ""} ${chip(st)}</p>`);
+    t.push(`<p class="meta">Termin: ${el.termin ? `${el.termin} (genauer Termin von deiner Lehrkraft)` : datum(el.datum, true)}${el.art === "nachweis" ? " · Leistungsnachweis" : ""} ${chip(st)}</p>`);
     if (el.bild) {
       t.push(`<img class="ms-bild" src="${esc(el.bild)}" alt="">`);
     }
