@@ -271,7 +271,7 @@ function zeichneGantt() {
       }
       const vx = istMeilenstein(v.el) ? X(v.el.datum) + 7 : X(v.el.ende) + PX;
       const vy = v.y + v.h / 2;
-      const nx = istMeilenstein(r.el) ? X(r.el.datum) - 8 : X(r.el.start);
+      const nx = istMeilenstein(r.el) ? (r.el.von ? X(r.el.von) : X(r.el.datum) - 8) : X(r.el.start);
       const ny = r.y + r.h / 2;
       const knick = Math.max(vx + 6, Math.min(nx - 6, vx + 10));
       t.push(`<path class="abh" d="M${vx} ${vy}H${knick}V${ny}H${nx - 1}" marker-end="url(#pfeil)"/>`);
@@ -306,6 +306,11 @@ function zeichneGantt() {
       const voll = st.id === "fertig" && el.braucht;
       t.push(`<title>${esc(el.name)} · ${termin(el, true)} · ${st.text}</title>`);
       t.push(`<text class="name ms-name" x="40" y="${yy + 4}">${esc(el.name)}</text>`);
+      if (el.von) {
+        // Zeitfenster (z. B. Design-Reviews über mehrere Wochen), Raute am Ende des Fensters
+        const xv = X(el.von);
+        t.push(`<rect class="ms-fenster" x="${xv}" y="${yy - 6}" width="${Math.max(0, x - xv)}" height="12" rx="6" fill="${tp.farbe}"/>`);
+      }
       t.push(`<path class="raute ${st.id}${el.art === "optional" ? " optional" : ""}" d="M${x} ${yy - 8}L${x + 8} ${yy}L${x} ${yy + 8}L${x - 8} ${yy}Z" stroke="${tp.farbe}" ${voll ? `fill="${tp.farbe}"` : ""}/>`);
       const msText = el.art === "nachweis" ? `${el.name} · ${termin(el)}` : termin(el);
       const links = x + 13 + msText.length * 6.4 > B - 6; // am rechten Rand: Text links der Raute

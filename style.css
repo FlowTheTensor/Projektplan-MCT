@@ -279,3 +279,4 @@ i.status-punkt.optional { background: transparent; box-shadow: inset 0 0 0 1.5px
 .status-chip.optional { background: transparent; border: 1px dashed var(--plan); color: var(--ink-soft); }
 .optional-hinweis { margin: 8px 0 12px; max-width: 880px; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 10px; font-size: .9rem; color: var(--ink-soft); }
 .lg-optional { width: 26px; height: 11px; border-radius: 3px; border: 1.4px dotted #2c5c96; }
+.ms-fenster { fill-opacity: .16; }
