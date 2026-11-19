@@ -101,6 +101,10 @@ function element(id) {
 function istMeilenstein(el) {
   return !!(el && el.datum);
 }
+function istOptional(el) {
+  const tp = el && P.teilprojekte.find((t) => t.id === el.tp);
+  return !!(tp && tp.optional);
+}
 function istEigen(el) {
   return !!(el && el.eigen);
 }
@@ -124,6 +128,9 @@ function status(ap) {
   const e = tag(ap.ende);
   if (a >= 1) {
     return { id: "fertig", text: "erledigt" };
+  }
+  if (istOptional(ap)) {
+    return { id: "optional", text: "optional" };
   }
   if (jetzt < s) {
     return { id: "geplant", text: "geplant" };
@@ -293,11 +300,10 @@ function zeichneGantt() {
       t.push(`<title>${esc(el.name)} · ${datum(el.datum, true)} · ${st.text}</title>`);
       t.push(`<text class="name ms-name" x="40" y="${yy + 4}">${esc(el.name)}</text>`);
       t.push(`<path class="raute ${st.id}${el.art === "optional" ? " optional" : ""}" d="M${x} ${yy - 8}L${x + 8} ${yy}L${x} ${yy + 8}L${x - 8} ${yy}Z" stroke="${tp.farbe}" ${voll ? `fill="${tp.farbe}"` : ""}/>`);
-      if (el.art === "nachweis") {
-        t.push(`<text class="nachweis-chip" x="${x + 13}" y="${yy + 4}">${esc(el.name)} · ${datum(el.datum)}</text>`);
-      } else {
-        t.push(`<text class="ms-datum" x="${x + 13}" y="${yy + 4}">${datum(el.datum)}</text>`);
-      }
+      const msText = el.art === "nachweis" ? `${el.name} · ${datum(el.datum)}` : datum(el.datum);
+      const links = x + 13 + msText.length * 6.4 > B - 6; // am rechten Rand: Text links der Raute
+      const tx = links ? x - 13 : x + 13;
+      t.push(`<text class="${el.art === "nachweis" ? "nachweis-chip" : "ms-datum"}" x="${tx}" y="${yy + 4}" ${links ? 'text-anchor="end"' : ""}>${esc(msText)}</text>`);
       t.push(`<path class="raute-klein" d="M24 ${yy - 5}L29 ${yy}L24 ${yy + 5}L19 ${yy}Z" stroke="${tp.farbe}" ${voll ? `fill="${tp.farbe}"` : ""}/>`);
     } else {
       const st = status(el);
@@ -309,7 +315,7 @@ function zeichneGantt() {
       t.push(`<text class="nr" x="20" y="${yy + 4}">${esc(nr)}</text>`);
       t.push(`<text class="name${istEigen(el) ? " eigen" : ""}" x="58" y="${yy + 4}">${esc(kuerze(el.name, 30))}</text>`);
       t.push(`<circle class="status-punkt ${st.id}" cx="${LABEL - 14}" cy="${yy}" r="4.5"/>`);
-      t.push(`<rect class="balken${istEigen(el) ? " eigen" : ""}" x="${x0}" y="${yy - 8}" width="${w}" height="16" rx="4" stroke="${tp.farbe}" fill="${tp.farbe}"/>`);
+      t.push(`<rect class="balken${istEigen(el) ? " eigen" : ""}${istOptional(el) ? " optional" : ""}" x="${x0}" y="${yy - 8}" width="${w}" height="16" rx="4" stroke="${tp.farbe}" fill="${tp.farbe}"/>`);
       if (a > 0) {
         t.push(`<rect class="fortschritt" x="${x0}" y="${yy - 8}" width="${Math.max(4, w * a)}" height="16" rx="4" fill="${tp.farbe}"/>`);
       }
@@ -395,7 +401,7 @@ function zeichnePSP() {
 // Detailansicht
 // ---------------------------------------------------------------------
 function naechstes() {
-  const offen = P.pakete.filter((p) => anteil(p) < 1).sort((a, b) => tag(a.start) - tag(b.start));
+  const offen = P.pakete.filter((p) => anteil(p) < 1 && !istOptional(p)).sort((a, b) => tag(a.start) - tag(b.start));
   return offen[0] || null;
 }
 function waehle(id) {
@@ -477,6 +483,9 @@ function zeichneDetail() {
     t.push(`<h2>${esc(el.nr)} ${esc(el.name)}${el.kurz ? ` <span class="kurz">· ${esc(el.kurz)}</span>` : ""}</h2>`);
     t.push(`<p class="meta">Plan: ${datum(el.start)} – ${datum(el.ende, true)} ${chip(st)}</p>`);
     t.push(`<p>${esc(el.text)}</p>`);
+    if (istOptional(el)) {
+      t.push(`<p class="optional-hinweis"><b>Optional:</b> Dieses Arbeitspaket ist ein freiwilliges Angebot. Nutze es, wenn du den Baustein für dein Projekt brauchst. Es zählt nicht für Projektampel, Stufen und Aufgabenzähler.</p>`);
+    }
     if (el.auftrag) {
       t.push(`<blockquote class="auftrag"><div class="auftrag-kopf">Auftrag der Stadtwerke Musterstadt</div>${el.auftrag.text ? `<p>${esc(el.auftrag.text)}</p>` : ""}${el.auftrag.punkte ? `<ul>${el.auftrag.punkte.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</blockquote>`);
     }
@@ -594,8 +603,9 @@ function zeichneEigene() {
   document.querySelectorAll("#eigene-liste [data-id]").forEach((b) => b.addEventListener("click", () => waehle(b.dataset.id)));
 }
 function zeichneZaehler() {
-  const alle = P.pakete.reduce((s, p) => s + p.aufgaben.length, 0);
-  const fertig = P.pakete.reduce((s, p) => s + erledigteAufgaben(p), 0);
+  const pflicht = P.pakete.filter((p) => !istOptional(p));
+  const alle = pflicht.reduce((s, p) => s + p.aufgaben.length, 0);
+  const fertig = pflicht.reduce((s, p) => s + erledigteAufgaben(p), 0);
   const ms = P.meilensteine.filter((m) => m.braucht);
   const msFertig = ms.filter(erreicht).length;
   $("#zaehler").innerHTML =

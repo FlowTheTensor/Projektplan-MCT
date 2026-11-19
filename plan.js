@@ -38,7 +38,7 @@ const PROJEKT = {
 
   teilprojekte: [
     { id: "tp1", nr: "1", name: "Probeauftrag Stadtwerke", info: "Ampel für den Verkehrsübungsplatz · gemeinsam", farbe: "#c81e3a" },
-    { id: "tp2", nr: "2", name: "Interne Schulungen", info: "Peripherie, Sicherheit, Dokumentation · gemeinsam", farbe: "#2c5c96" },
+    { id: "tp2", nr: "2", name: "Interne Schulungen (optional)", info: "freiwilliges Angebot · Peripherie, Sicherheit, Dokumentation", farbe: "#2c5c96", optional: true },
     { id: "tp3", nr: "3", name: "Eigenes Projekt", info: "Dein Kundenauftrag · einzeln", farbe: "#348054" }
   ],
 
@@ -134,7 +134,7 @@ const PROJEKT = {
     {
       id: "ap21", tp: "tp2", nr: "2.1", name: "Peripherie-Lernstationen", kurz: "ADC, PWM, Timer, UART, I²C oder SPI",
       start: "2027-02-15", ende: "2027-03-05",
-      text: "Interne Schulung des Büros: An fünf Stationen bringst du die wichtigsten Peripheriebausteine zum Laufen und schreibst zu jedem ein kurzes Testprogramm. Den Bus (I²C oder SPI) wählst du passend zu deinem Projekt.",
+      text: "Optionale Schulung des Büros: An fünf Stationen bringst du die wichtigsten Peripheriebausteine zum Laufen und schreibst zu jedem ein kurzes Testprogramm. Den Bus (I²C oder SPI) wählst du passend zu deinem Projekt.",
       abgabe: "Testprogramme und Kurzprotokolle",
       material: "Stationskarten, Logikanalysator",
       aufgaben: aufgaben(
@@ -158,14 +158,14 @@ const PROJEKT = {
         "Sicherer Zustand: Ampel blinkt bei Fehler gelb",
         "Sleep-Modus mit Aufwecken per Interrupt",
         "Stromaufnahme mit und ohne Sleep gemessen",
-        "Ideen für das Kapitel „Sicherheit und Energie“ im eigenen Projekt notiert"
+        "Ideen für den Abschnitt „Sicherheit und Energie“ in der eigenen Doku notiert"
       ),
       praxis: { text: "Geräte mit Batterie schlafen fast die ganze Zeit und wachen nur kurz auf, um zu messen oder zu senden. Ein Watchdog sorgt dafür, dass ein Gerät nach einem Fehler von selbst neu startet.", frage: "Wie lange hält eine Batterie mit 2000 mAh bei 20 mA und wie lange bei 0,02 mA?" }
     },
     {
       id: "ap23", tp: "tp2", nr: "2.3", name: "Doku-Workshop", kurz: "Vorlage und Testplan",
       start: "2027-03-15", ende: "2027-03-19",
-      text: "Wie sieht eine gute Projektdokumentation aus? Ihr seht euch ein Beispiel an, lernt die Bewertung kennen und legt die Gliederung und den Testplan für euer Projekt an.",
+      text: "Wie sieht eine gute Projektdokumentation aus? Ihr seht euch ein Beispiel an, lernt die Bewertung kennen und legt die Gliederung und den Testplan für euer Projekt an. Die Gliederung ist vorgegeben: Einführung, Hardware, Software, Testprotokoll und Fazit, Ausblick, Quellen, Anhang Quellcode.",
       aufgaben: aufgaben("Gliederung der eigenen Dokumentation nach Vorlage angelegt", "Testplan mit Soll-Werten angelegt")
     },
 
@@ -220,16 +220,17 @@ const PROJEKT = {
     },
     {
       id: "ap36", tp: "tp3", nr: "3.6", name: "Dokumentation", kurz: "Übergabe vorbereiten",
-      start: "2027-03-15", ende: "2027-04-30", nach: ["ap23"],
-      text: "Die Dokumentation ist das, was dein Kunde in der Hand hält. Mit ihr soll jemand dein Produkt nachbauen, verstehen und reparieren können. Schreib sie laufend mit, nicht erst in der letzten Woche.",
+      start: "2027-03-15", ende: "2027-04-30",
+      text: "Die Dokumentation schreibst du für deine Kollegen im Büro: Mit ihr sollen andere Mitarbeiter dein Produkt nachbauen, verstehen, reparieren und erweitern können, auch wenn du nicht da bist. Schreib sie laufend mit, nicht erst in der letzten Woche. Die Gliederung ist vorgegeben, die Aufgaben unten folgen ihr Kapitel für Kapitel.",
       aufgaben: aufgaben(
-        "Lastenheft und Soll-Ist-Vergleich",
-        "Schaltplan, Bauteilliste und begründete Bauteilwahl",
-        "Zustandsdiagramm, PAP oder Struktogramm passend zum Code",
-        "Quellcode strukturiert und kommentiert",
-        "Controller-Funktion erklärt: Register, Polling oder Interrupt, Peripherie",
-        "Kapitel Sicherheit und Energie",
-        "Testprotokoll und Fazit"
+        { name: "1 Einführung: Zielsetzung und Motivation", hinweis: "mit den Anforderungen aus dem Lastenheft (Muss / Soll / Kann)" },
+        { name: "2 Hardware / Aufbau", hinweis: "Schaltplan, Bauteilliste, Fotos, begründete Wahl von Controller und Bauteilen" },
+        { name: "3 Software / Programm", hinweis: "Zustandsdiagramm, PAP oder Struktogramm; Register, Polling oder Interrupt, Peripherie erklärt" },
+        { name: "Sicherheit und Energie", hinweis: "als Abschnitt in Kapitel 2 oder 3" },
+        { name: "4 Testprotokoll und Fazit", hinweis: "Tests mit Soll / Ist, Fazit als Soll-Ist-Vergleich zum Lastenheft" },
+        "5 Ausblick für Erweiterungen",
+        { name: "6 Quellen", hinweis: "auch Datenblätter und Bibliotheken" },
+        { name: "Anhang: Quellcode", hinweis: "strukturiert, kommentiert, eigene Funktionen" }
       )
     },
     {
@@ -270,10 +271,10 @@ const PROJEKT = {
       kriterien: ["Projektziel und Anforderungen (Muss / Soll / Kann) klar dargestellt", "Stand gegenüber dem Projektplan nachvollziehbar und ehrlich", "Live-Demo eines lauffähigen Teilstands", "Schaltung und Programmablauf fachlich korrekt erklärt", "Probleme benannt, nächste Schritte begründet", "Fachgespräch: Fragen zu Controller, Peripherie und Code sicher beantwortet"] },
     { id: "mexk", tp: "tp3", name: "Messe-Exkursion (optional)", datum: "2027-03-17", art: "optional",
       text: "Wenn es klappt, besucht ihr die embedded world in Nürnberg (16. bis 18. März 2027), die große Fachmesse für Embedded-Systeme. Dort seht ihr, wie Firmen ihre Produkte am Stand präsentieren." },
-    { id: "m34", tp: "tp3", name: "Übergabe an den Kunden", datum: "2027-04-30", art: "nachweis", braucht: ["ap34", "ap35", "ap36"], nach: ["ap35", "ap36"],
-      text: "Ende April übergibst du deinem Kunden die Projektdokumentation, dein Projekt ist so weit fertig, wie es geht. Die Dokumentation wird als Schulaufgabe 2 bewertet.",
+    { id: "m34", tp: "tp3", name: "Übergabe der Dokumentation", datum: "2027-04-30", art: "nachweis", braucht: ["ap34", "ap35", "ap36"], nach: ["ap35", "ap36"],
+      text: "Ende April übergibst du die Projektdokumentation ans Büro, dein Projekt ist so weit fertig, wie es geht. Mit der Dokumentation sollen Kollegen dein Produkt nachbauen, verstehen, reparieren und erweitern können. Die Dokumentation wird als Schulaufgabe 2 bewertet.",
       kriterienTitel: "So wird bewertet (40 Punkte)",
-      kriterien: ["Form: Gliederung, Seitenzahlen, Abbildungsverzeichnis, Quellen, Sprache (4)", "Lastenheft: Muss / Soll / Kann, messbar (4)", "Hardware: Schaltplan, Bauteilliste, begründete Bauteilwahl (6)", "Software-Entwurf passend zum Code (6)", "Quellcode strukturiert, kommentiert, eigene Funktionen (4)", "Controller-Funktion erklärt: Register, Polling oder Interrupt, Peripherie (6)", "Sicherheit und Energie (4)", "Tests mit Soll / Ist, Funktionsnachweis (4)", "Fazit: Soll-Ist-Vergleich, Ausblick (2)"] },
+      kriterien: ["Form: Gliederung wie vorgegeben, Seitenzahlen, Abbildungen beschriftet, Sprache (3)", "1 Einführung: Zielsetzung, Motivation, Anforderungen Muss / Soll / Kann (4)", "2 Hardware / Aufbau: Schaltplan, Bauteilliste, Fotos, begründete Bauteilwahl (6)", "3 Software: Programmentwurf passend zum Code (6)", "3 Software: Controller-Funktion erklärt – Register, Polling oder Interrupt, Peripherie (6)", "Sicherheit und Energie, in Kapitel 2 oder 3 (4)", "4 Testprotokoll und Fazit: Soll / Ist, Funktionsnachweis, Soll-Ist-Vergleich (5)", "5 Ausblick für Erweiterungen (2)", "6 Quellen, mit Datenblättern und Bibliotheken (1)", "Anhang: Quellcode strukturiert, kommentiert, eigene Funktionen (3)"] },
     { id: "m35", tp: "tp3", name: "Messestand JPS Embedded", datum: "2027-05-05", braucht: ["ap37"], nach: ["ap37", "m34"], bild: "assets/messestand.svg",
       text: "Zum Abschluss präsentiert das Büro seine Produkte an einer kleinen Messe. Jeder hat einen eigenen Stand mit seinem Projekt, Plakat oder Flyer und Datenblatt, das Video läuft daneben. Besucher sind zum Beispiel die Klassen des 1. Schuljahres. Der Messestand wird nicht benotet." }
   ],
@@ -292,7 +293,7 @@ const PROJEKT = {
     { id: "s3", rang: "Entwicklung", pakete: ["ap13"] },
     { id: "s4", rang: "Senior-Entwicklung", pakete: ["ap14"] },
     { id: "s5", rang: "Projektleitung", pakete: ["ap31", "ap32", "ap33"] },
-    { id: "s6", rang: "Produktentwicklung", pakete: ["ap21", "ap22", "ap23", "ap34", "ap35", "ap36"] },
+    { id: "s6", rang: "Produktentwicklung", pakete: ["ap34", "ap35", "ap36"] },
     { id: "s7", rang: "Messeaussteller", pakete: ["ap37"] }
   ]
 };

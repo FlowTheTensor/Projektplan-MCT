@@ -5,7 +5,7 @@ Schülerseite für das Fach Mikrocontrollertechnik (Fachschule Elektrotechnik, 2
 **Live:** <https://flowthetensor.github.io/Projektplan-MCT/> · verlinkt im [Dashboard Lernsituationen](https://nerdifant.de/Dashboard-Lernsituationen/)
 
 - **Teilprojekt 1 – Probeauftrag Stadtwerke:** Ampel für den Verkehrsübungsplatz der (ausgedachten) Stadtwerke Musterstadt in drei Lieferungen, Abnahme, Schulaufgabe 1
-- **Teilprojekt 2 – Interne Schulungen:** Peripherie-Lernstationen, Sicherheit & Energie, Doku-Workshop
+- **Teilprojekt 2 – Interne Schulungen (optional):** Peripherie-Lernstationen, Sicherheit & Energie, Doku-Workshop; zählen nicht für Projektampel, Stufen und Aufgabenzähler
 - **Teilprojekt 3 – Eigenes Projekt:** Angebot, Lastenheft und Projektplan, Prototyp, Design-Review (mündliche Note), Entwicklung, Tests, Dokumentation, Übergabe (Schulaufgabe 2), Werbemittel, Messestand
 
 ## Ansichten

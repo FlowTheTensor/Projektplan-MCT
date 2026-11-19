@@ -273,3 +273,9 @@ html[data-theme="dark"] .knopf.primaer { color: #121214; }
 html[data-theme="dark"] .ampel { background: #000; border: 1px solid var(--line); }
 .sicherung { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
 .sicherung .knopf { font-size: .85rem; padding: 7px 10px; }
+.balken.optional { stroke-dasharray: 2 3; fill-opacity: .08; }
+.status-punkt.optional { fill: none; stroke: var(--plan); stroke-width: 1.5; }
+i.status-punkt.optional { background: transparent; box-shadow: inset 0 0 0 1.5px var(--plan); }
+.status-chip.optional { background: transparent; border: 1px dashed var(--plan); color: var(--ink-soft); }
+.optional-hinweis { margin: 8px 0 12px; max-width: 880px; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 10px; font-size: .9rem; color: var(--ink-soft); }
+.lg-optional { width: 26px; height: 11px; border-radius: 3px; border: 1.4px dotted #2c5c96; }
